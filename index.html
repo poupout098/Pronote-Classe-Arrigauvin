@@ -228,11 +228,11 @@ const eleves = [
 let currentEleve = null;   // Ã©lÃ¨ve sÃ©lectionnÃ© dans le panneau admin
 let loggedInUser = null;   // user actuellement connectÃ© ('admin' ou username)
 
-// --- Helpers robustes pour Ã©viter les erreurs quand la clÃ© n'existe pas ---
+// --- Helpers robustes pour éviter les erreurs quand la clé n'existe pas ---
 function defaultData(){
   return {
-    notes:["Maths : 15/20","FranÃ§ais : 17/20"],
-    vie:"Participation au club thÃ©Ã¢tre. Aucun incident.",
+    notes:["Maths : 15/20","Français : 17/20"],
+    vie:"Participation au club théatre. Aucun incident.",
     abs:"",
     pdfs:[],
     devoirs:[],
@@ -271,6 +271,8 @@ function login(){
       document.getElementById("studentName").innerText=`Bienvenue ${eleve.name}`;
       ouvrir('pronote');
       loadEleveData(eleve.username);
+      lockCarnetForEleve();
+
     } else {
       document.getElementById("error").innerText="Identifiants incorrects.";
     }
@@ -466,6 +468,22 @@ window.addEventListener('load', ()=>{
   if(document.getElementById('adminSelect') && loggedInUser === 'admin'){
     populateAdminSelect();
   }
+  function lockCarnetForEleve() {
+  if (loggedInUser !== 'admin') {
+    document.querySelectorAll('.presence').forEach(input => {
+      input.readOnly = true;
+      input.classList.add('readonly');
+    });
+    const btn = document.querySelector('#appelPanel button');
+    if (btn) btn.disabled = true;
+
+    const info = document.createElement('div');
+    info.className = 'info';
+    info.innerText = '🔒 Carnet de vie scolaire – lecture seule pour les élèves';
+    document.getElementById('appelPanel').prepend(info);
+  }
+}
+
 });
 
 </script>
