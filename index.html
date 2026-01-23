@@ -2,11 +2,11 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Mini Pronote ++</title>
+<title>Mini Pronote++</title>
 
 <style>
 body{
-  font-family:Segoe UI,Arial,sans-serif;
+  font-family: "Segoe UI", Arial, sans-serif;
   background:#f4f6f9;
   margin:0;
 }
@@ -21,17 +21,30 @@ body{
   background:white;
   color:#003366;
   border:none;
-  padding:10px 18px;
+  padding:12px 20px;
   border-radius:8px;
   font-weight:600;
+  cursor:pointer;
 }
-.login,.main,.admin,.appel{
+button{
+  background:#0066cc;
+  color:white;
+  border:none;
+  padding:10px 16px;
+  border-radius:8px;
+  cursor:pointer;
+}
+button.delete{
+  background:#cc0000;
+  margin-left:10px;
+}
+.login,.main,.admin-panel,.appel-panel{
   background:white;
-  max-width:1000px;
-  margin:40px auto;
   padding:30px;
   border-radius:12px;
-  box-shadow:0 10px 25px rgba(0,0,0,.1);
+  max-width:1000px;
+  margin:40px auto;
+  box-shadow:0 10px 25px rgba(0,0,0,0.1);
 }
 .section{
   background:#f9fafb;
@@ -40,7 +53,7 @@ body{
   border-left:6px solid #0066cc;
   border-radius:10px;
 }
-h2,h3{text-align:center;color:#003366}
+h2,h3{ text-align:center; color:#003366; }
 input,textarea,select{
   width:100%;
   padding:10px;
@@ -48,21 +61,14 @@ input,textarea,select{
   border-radius:6px;
   border:1px solid #ccc;
 }
-button{
-  background:#0066cc;
-  color:white;
-  border:none;
-  padding:8px 14px;
-  border-radius:8px;
-  cursor:pointer;
-}
-button.delete{background:#cc0000;margin-left:10px}
+.presence{ width:80px; }
+.readonly{ background:#e9ecef; }
 .info{
   background:#eef3ff;
   padding:10px;
   border-radius:8px;
-  font-weight:600;
   text-align:center;
+  font-weight:600;
   margin-bottom:15px;
 }
 </style>
@@ -71,53 +77,76 @@ button.delete{background:#cc0000;margin-left:10px}
 <body>
 
 <!-- NAV -->
-<div class="nav" id="nav" style="display:none">
-  <button onclick="show('eleve')">📘 Accueil</button>
-  <button onclick="show('appel')">📒 Vie scolaire</button>
+<div class="nav" id="navbar" style="display:none">
+  <button onclick="ouvrir('pronote')">📘 Accueil</button>
+  <button onclick="ouvrir('appel')">📋 Vie scolaire</button>
   <button onclick="logout()">🚪 Déconnexion</button>
 </div>
 
 <!-- LOGIN -->
-<div class="login" id="login">
+<div class="login" id="loginBox">
   <h2>Connexion Pronote ++</h2>
-  <input id="user" placeholder="Utilisateur">
-  <input id="pass" type="password" placeholder="Mot de passe">
+  <input id="username" placeholder="Utilisateur">
+  <input id="password" type="password" placeholder="Mot de passe">
   <button onclick="login()">Se connecter</button>
-  <p id="err" style="color:red"></p>
+  <p id="error" style="color:red"></p>
 </div>
 
 <!-- ELEVE -->
-<div class="main" id="eleve" style="display:none">
-  <h2 id="nomEleve"></h2>
+<div class="main" id="pronotePanel" style="display:none">
+  <h2 id="studentName"></h2>
 
-  <div class="section"><h3>📊 Notes</h3><ul id="notes"></ul></div>
-  <div class="section"><h3>🏫 Vie scolaire</h3><p id="vie"></p></div>
-  <div class="section"><h3>📚 Devoirs</h3><ul id="devoirs"></ul></div>
-  <div class="section"><h3>📋 Appels</h3><ul id="appels"></ul></div>
-  <div class="section"><h3>📒 Carnet disciplinaire</h3><ul id="carnetEleve"></ul></div>
-  <div class="section"><h3>🕒 Emploi du temps</h3><pre id="edt"></pre></div>
-</div>
-
-<!-- APPEL ELEVE -->
-<div class="appel" id="appel" style="display:none">
-  <div class="info">🔒 Lecture seule pour les élèves</div>
-</div>
-
-<!-- ADMIN -->
-<div class="admin" id="admin" style="display:none">
-  <h2>⚙️ Administration</h2>
-  <select id="selectEleve" onchange="loadAdmin()"></select>
+  <div class="section">
+    <h3>📊 Notes</h3>
+    <ul id="studentGrades"></ul>
+  </div>
 
   <div class="section">
     <h3>🏫 Vie scolaire</h3>
-    <textarea id="adminVie"></textarea>
+    <p id="studentVie"></p>
+  </div>
+
+  <div class="section">
+    <h3>📋 Historique des appels</h3>
+    <ul id="studentAppel"></ul>
+  </div>
+
+  <div class="section">
+    <h3>📄 Documents</h3>
+    <ul id="studentPDFs"></ul>
   </div>
 
   <div class="section">
     <h3>📚 Devoirs</h3>
-    <input id="newDevoir" placeholder="Ex : Maths p.34">
-    <button onclick="addDevoir()">Ajouter</button>
-    <ul id="adminDevoirs"></ul>
+    <ul id="studentDevoirs"></ul>
+  </div>
+
+  <div class="section">
+    <h3>🕒 Emploi du temps</h3>
+    <pre id="studentEDT"></pre>
+  </div>
+</div>
+
+<!-- CARNET -->
+<div class="appel-panel" id="appelPanel" style="display:none">
+  <div class="info">🔒 Carnet lecture seule pour les élèves</div>
+  <div>Travail non fait <input class="presence" readonly></div>
+  <div>Retard <input class="presence" readonly></div>
+  <div>Absences <input class="presence" readonly></div>
+  <div>Fournitures <input class="presence" readonly></div>
+</div>
+
+<!-- ADMIN -->
+<div class="admin-panel" id="adminPanel" style="display:none">
+  <h2>⚙️ Panneau Admin</h2>
+
+  <select id="adminSelect" onchange="loadAdminData()"></select>
+
+  <div class="section">
+    <h3>📊 Notes</h3>
+    <input id="newNote" placeholder="Ex : Maths 15/20">
+    <button onclick="addNote()">Ajouter</button>
+    <ul id="adminNotes"></ul>
   </div>
 
   <div class="section">
@@ -128,22 +157,8 @@ button.delete{background:#cc0000;margin-left:10px}
       <option>Absent</option>
       <option>Retard</option>
     </select>
-    <button onclick="addAppel()">Valider</button>
-    <ul id="adminAppels"></ul>
-  </div>
-
-  <div class="section">
-    <h3>📒 Carnet disciplinaire</h3>
-    <input type="date" id="carDate">
-    <select id="carType">
-      <option>Travail non fait</option>
-      <option>Oubli de matériel</option>
-      <option>Retard</option>
-      <option>Comportement</option>
-    </select>
-    <input id="carCom" placeholder="Commentaire">
-    <button onclick="addCarnet()">Ajouter</button>
-    <ul id="adminCarnet"></ul>
+    <button onclick="validerAppel()">Valider l’appel</button>
+    <ul id="adminAppel"></ul>
   </div>
 
   <div class="section">
@@ -153,104 +168,90 @@ button.delete{background:#cc0000;margin-left:10px}
 </div>
 
 <script>
-const users=[
+const eleves=[
   {u:"gustav",p:"2019",n:"Gustav"},
   {u:"julia",p:"2016",n:"Julia"}
 ];
+
 let logged=null;
 
 function def(){
-  return{notes:[],vie:"",devoirs:[],appel:[],carnet:[],edt:""};
+  return{notes:[],vie:"",pdfs:[],devoirs:[],edt:"",appel:[]};
 }
-function get(u){return JSON.parse(localStorage.getItem(u))||def();}
-function set(u,d){localStorage.setItem(u,JSON.stringify(d));}
+function get(u){ return JSON.parse(localStorage.getItem(u))||def(); }
+function set(u,d){ localStorage.setItem(u,JSON.stringify(d)); }
 
 function login(){
-  if(user.value==="admin"&&pass.value==="admin123"){
+  const u=username.value,p=password.value;
+  if(u==="admin"&&p==="admin123"){
     logged="admin";
-    nav.style.display="flex";
-    login.style.display="none";
-    admin.style.display="block";
-    users.forEach(e=>{
+    navbar.style.display="flex";
+    loginBox.style.display="none";
+    adminPanel.style.display="block";
+    ouvrir('pronote');
+    adminSelect.innerHTML="";
+    eleves.forEach(e=>{
       let o=document.createElement("option");
-      o.value=e.u;o.text=e.n;selectEleve.appendChild(o);
+      o.value=e.u;o.text=e.n;adminSelect.appendChild(o);
     });
-    loadAdmin();return;
+    loadAdminData();
+    return;
   }
-  const e=users.find(x=>x.u===user.value&&x.p===pass.value);
-  if(!e){err.innerText="Identifiants incorrects";return;}
+  const e=eleves.find(x=>x.u===u&&x.p===p);
+  if(!e){ error.innerText="Erreur";return; }
   logged=e.u;
-  nav.style.display="flex";
-  login.style.display="none";
-  eleve.style.display="block";
-  nomEleve.innerText="Bienvenue "+e.n;
+  navbar.style.display="flex";
+  loginBox.style.display="none";
+  pronotePanel.style.display="block";
+  studentName.innerText="Bienvenue "+e.n;
   loadEleve();
 }
 
-function logout(){location.reload();}
-function show(id){
-  eleve.style.display=id==="eleve"?"block":"none";
-  appel.style.display=id==="appel"?"block":"none";
+function logout(){ location.reload(); }
+
+function ouvrir(o){
+  pronotePanel.style.display=o==="pronote"?"block":"none";
+  appelPanel.style.display=o==="appel"?"block":"none";
 }
 
 function loadEleve(){
   const d=get(logged);
-  notes.innerHTML=d.notes.map(n=>`<li>${n}</li>`).join("");
-  vie.innerText=d.vie;
-  devoirs.innerHTML=d.devoirs.map(x=>`<li>${x}</li>`).join("");
-  appels.innerHTML=d.appel.map(a=>`<li>${a.date} : ${a.statut}</li>`).join("");
-  carnetEleve.innerHTML=d.carnet.map(c=>`<li>${c.date} – ${c.type} (${c.com})</li>`).join("");
-  edt.innerText=d.edt;
+  studentGrades.innerHTML=d.notes.map(n=>`<li>${n}</li>`).join("");
+  studentVie.innerText=d.vie;
+  studentEDT.innerText=d.edt;
+  studentAppel.innerHTML=d.appel.map(a=>`<li>${a.date} : ${a.statut}</li>`).join("");
 }
 
-function loadAdmin(){
-  const u=selectEleve.value,d=get(u);
-  adminVie.value=d.vie;
-  adminDevoirs.innerHTML=d.devoirs.map((x,i)=>`<li>${x}<button class="delete" onclick="delDevoir(${i})">X</button></li>`).join("");
-  adminAppels.innerHTML=d.appel.map(a=>`<li>${a.date} : ${a.statut}</li>`).join("");
-  adminCarnet.innerHTML=d.carnet.map((c,i)=>`<li>${c.date} – ${c.type} (${c.com})<button class="delete" onclick="delCarnet(${i})">X</button></li>`).join("");
+function loadAdminData(){
+  const u=adminSelect.value;
+  const d=get(u);
+  adminNotes.innerHTML=d.notes.map((n,i)=>`<li>${n}<button class="delete" onclick="delNote(${i})">X</button></li>`).join("");
+  adminAppel.innerHTML=d.appel.map(a=>`<li>${a.date} : ${a.statut}</li>`).join("");
   adminEDT.value=d.edt;
 }
 
-adminVie?.addEventListener("input",()=>{
-  const u=selectEleve.value,d=get(u);
-  d.vie=adminVie.value;set(u,d);
-});
-adminEDT?.addEventListener("input",()=>{
-  const u=selectEleve.value,d=get(u);
-  d.edt=adminEDT.value;set(u,d);
-});
-
-function addDevoir(){
-  const u=selectEleve.value,d=get(u);
-  if(!newDevoir.value.trim())return;
-  d.devoirs.push(newDevoir.value);set(u,d);
-  newDevoir.value="";loadAdmin();
-}
-function delDevoir(i){
-  const u=selectEleve.value,d=get(u);
-  d.devoirs.splice(i,1);set(u,d);loadAdmin();
+function addNote(){
+  const u=adminSelect.value,d=get(u);
+  d.notes.push(newNote.value);
+  set(u,d); newNote.value=""; loadAdminData();
 }
 
-function addAppel(){
-  const u=selectEleve.value,d=get(u);
-  if(!appelDate.value)return alert("Date requise");
+function delNote(i){
+  const u=adminSelect.value,d=get(u);
+  d.notes.splice(i,1); set(u,d); loadAdminData();
+}
+
+function validerAppel(){
+  const u=adminSelect.value,d=get(u);
   d.appel.push({date:appelDate.value,statut:appelStatut.value});
-  set(u,d);loadAdmin();
+  set(u,d); loadAdminData();
 }
 
-function addCarnet(){
-  const u=selectEleve.value,d=get(u);
-  if(!carDate.value)return alert("Date requise");
-  d.carnet.push({date:carDate.value,type:carType.value,com:carCom.value});
-  set(u,d);carCom.value="";loadAdmin();
-}
-function delCarnet(i){
-  const u=selectEleve.value,d=get(u);
-  d.carnet.splice(i,1);set(u,d);loadAdmin();
-}
+adminEDT?.addEventListener("input",()=>{
+  const u=adminSelect.value,d=get(u);
+  d.edt=adminEDT.value; set(u,d);
+});
 </script>
 
 </body>
 </html>
-
