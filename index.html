@@ -1,491 +1,256 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8">
-  <title>Mini Pronote+ ARRIGONI</title>
- <style>
-  body {
-    font-family: "Segoe UI", Roboto, Arial, sans-serif;
-    background: #f4f6f9;
-    margin: 0;
-  }
+<meta charset="UTF-8">
+<title>Mini Pronote++</title>
 
-  .nav {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    background: #003366;
-    padding: 15px;
-  }
-
-  .nav button {
-    background: white;
-    color: #003366;
-    border: none;
-    padding: 12px 20px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-  }
-
-  .login,.main,.admin-panel,.appel-panel {
-    background: white;
-    padding: 30px;
-    border-radius: 12px;
-    max-width: 1000px;
-    margin: 40px auto;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    position: relative;
-  }
-
-  h2,h3 {
-    text-align: center;
-    color: #003366;
-  }
-
-  input, textarea, select {
-    padding: 12px;
-    margin: 10px 0;
-    width: 100%;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-  }
-
-  button {
-    padding: 12px 20px;
-    background: #0066cc;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-
-  button:hover { opacity: 0.9; }
-
-  .section {
-    border-radius: 10px;
-    padding: 20px;
-    margin: 20px 0;
-    background: #f9fafb;
-    border-left: 6px solid #0066cc;
-  }
-
-  .logout-btn {
-    background: #cc0000;
-    position: absolute;
-    right: 20px;
-    top: 20px;
-  }
-
-  .presence {
-    width: 80px;
-  }
-
-  .readonly {
-    background: #e9ecef;
-    cursor: not-allowed;
-  }
-
-  .info {
-    background: #eef3ff;
-    padding: 10px;
-    border-radius: 8px;
-    color: #003366;
-    margin-bottom: 15px;
-    text-align: center;
-    font-weight: 600;
-  }
+<style>
+body{
+  font-family: "Segoe UI", Arial, sans-serif;
+  background:#f4f6f9;
+  margin:0;
+}
+.nav{
+  display:flex;
+  justify-content:center;
+  gap:20px;
+  background:#003366;
+  padding:15px;
+}
+.nav button{
+  background:white;
+  color:#003366;
+  border:none;
+  padding:12px 20px;
+  border-radius:8px;
+  font-weight:600;
+  cursor:pointer;
+}
+button{
+  background:#0066cc;
+  color:white;
+  border:none;
+  padding:10px 16px;
+  border-radius:8px;
+  cursor:pointer;
+}
+button.delete{
+  background:#cc0000;
+  margin-left:10px;
+}
+.login,.main,.admin-panel,.appel-panel{
+  background:white;
+  padding:30px;
+  border-radius:12px;
+  max-width:1000px;
+  margin:40px auto;
+  box-shadow:0 10px 25px rgba(0,0,0,0.1);
+}
+.section{
+  background:#f9fafb;
+  padding:20px;
+  margin:20px 0;
+  border-left:6px solid #0066cc;
+  border-radius:10px;
+}
+h2,h3{ text-align:center; color:#003366; }
+input,textarea,select{
+  width:100%;
+  padding:10px;
+  margin:8px 0;
+  border-radius:6px;
+  border:1px solid #ccc;
+}
+.presence{ width:80px; }
+.readonly{ background:#e9ecef; }
+.info{
+  background:#eef3ff;
+  padding:10px;
+  border-radius:8px;
+  text-align:center;
+  font-weight:600;
+  margin-bottom:15px;
+}
 </style>
 </head>
+
 <body>
 
-<!-- barre de navigation -->
-<div class="nav" id="navbar" style="display:none;">
-  <button onclick="ouvrir('pronote')">ðŸ“– Page d'accueil</button>
-  <button onclick="ouvrir('appel')">Choses Ã  faire</button>
-  <button class="logout-btn" onclick="logout()">DÃ©connexion</button>
+<!-- NAV -->
+<div class="nav" id="navbar" style="display:none">
+  <button onclick="ouvrir('pronote')">📘 Accueil</button>
+  <button onclick="ouvrir('appel')">📋 Vie scolaire</button>
+  <button onclick="logout()">🚪 Déconnexion</button>
 </div>
 
-<!-- Connexion -->
+<!-- LOGIN -->
 <div class="login" id="loginBox">
-  <img src="https://cdn-icons-png.flaticon.com/512/2922/2922510.png" alt="avatar Ã©lÃ¨ve">
-  <h2>Connexion au Pronote ++</h2>
-  <input type="text" id="username" placeholder="Nom d'utilisateur">
-  <input type="password" id="password" placeholder="Mot de passe">
+  <h2>Connexion Pronote ++</h2>
+  <input id="username" placeholder="Utilisateur">
+  <input id="password" type="password" placeholder="Mot de passe">
   <button onclick="login()">Se connecter</button>
-  <p id="error" style="color:red;"></p>
+  <p id="error" style="color:red"></p>
 </div>
 
-<!-- Sections Pronote -->
-<div class="main" id="pronotePanel" style="display:none;">
-  <h2 id="studentName">Bienvenue</h2>
+<!-- ELEVE -->
+<div class="main" id="pronotePanel" style="display:none">
+  <h2 id="studentName"></h2>
 
-  <button onclick="toggleSection('notes')">Afficher / Cacher Notes</button>
-  <div class="section notes" style="display:none;">
-    <h3>ðŸ“Š Notes</h3>
+  <div class="section">
+    <h3>📊 Notes</h3>
     <ul id="studentGrades"></ul>
   </div>
 
-  <button onclick="toggleVieScolaire()">Masquer / Montrer Vie scolaire</button>
-  <div class="section vie" id="vieScolaire" style="display:none;">
-    <h3>ðŸ« Vie scolaire</h3>
-    <p id="studentVieScolaire"></p>
+  <div class="section">
+    <h3>🏫 Vie scolaire</h3>
+    <p id="studentVie"></p>
   </div>
 
-  <button onclick="toggleSection('pdf')">Afficher / Cacher Documents PDF</button>
-  <div class="section pdf" style="display:none;">
-    <h3>ðŸ“‚ Documents PDF</h3>
+  <div class="section">
+    <h3>📋 Historique des appels</h3>
+    <ul id="studentAppel"></ul>
+  </div>
+
+  <div class="section">
+    <h3>📄 Documents</h3>
     <ul id="studentPDFs"></ul>
   </div>
 
-  <button onclick="toggleSection('absent')">Afficher / Cacher Absences</button>
-  <div class="section absent" style="display:none;">
-    <h3>ðŸš« Absences</h3>
-    <p id="studentAbsence"></p>
-  </div>
-
-  <button onclick="toggleSection('devoirs')">Afficher / Cacher Devoirs</button>
-  <div class="section devoirs" style="display:none;">
-    <h3>ðŸ“ Devoirs</h3>
+  <div class="section">
+    <h3>📚 Devoirs</h3>
     <ul id="studentDevoirs"></ul>
   </div>
 
-  <div class="section emplois">
-    <h3>ðŸ•’ Emploi du Temps</h3>
-    <button onclick="toggleEDT()">Afficher / Cacher</button>
-    <div id="emploiDuTemps" style="display:none; padding-top:15px;"></div>
+  <div class="section">
+    <h3>🕒 Emploi du temps</h3>
+    <pre id="studentEDT"></pre>
   </div>
 </div>
 
-<!-- Onglet Carnet Vie Scolaire -->
-<div class="appel-panel" id="appelPanel" style="display:block;">
-  <h2>ðŸ“‹ Carnet vie scolaire</h2>
-  <div class="Travail"><span>Travail Non Fait :</span><input type="number" class="presence" value="0"></div>
-  <div class="Retard"><span>Retard :</span><input type="number" class="presence" value="0"></div>
-  <div class="Absences"><span>Absences :</span><input type="number" class="presence" value="0"></div>
-  <div class="Manque de fourniture"><span>Fourniture :</span><input type="number" class="presence" value="0"></div>
-  <button type="button" onclick="numerote()">âœ… Valider le carnet</button>
+<!-- CARNET -->
+<div class="appel-panel" id="appelPanel" style="display:none">
+  <div class="info">🔒 Carnet lecture seule pour les élèves</div>
+  <div>Travail non fait <input class="presence" readonly></div>
+  <div>Retard <input class="presence" readonly></div>
+  <div>Absences <input class="presence" readonly></div>
+  <div>Fournitures <input class="presence" readonly></div>
 </div>
 
-<!-- Panneau Admin -->
-<div class="admin-panel" id="adminPanel" style="display:none;">
-  <h2>âš™ï¸ Panneau Admin</h2>
+<!-- ADMIN -->
+<div class="admin-panel" id="adminPanel" style="display:none">
+  <h2>⚙️ Panneau Admin</h2>
 
-  <label>Choisir Ã‰lÃ¨ve :</label>
   <select id="adminSelect" onchange="loadAdminData()"></select>
 
-  <div class="section notes">
-    <h3>Modifier Notes</h3>
-    <ul id="adminNotesList"></ul>
-    <input type="text" id="newNote" placeholder="Ex : Maths : 18/20">
-    <button onclick="addAdminNote()">Ajouter Note</button>
+  <div class="section">
+    <h3>📊 Notes</h3>
+    <input id="newNote" placeholder="Ex : Maths 15/20">
+    <button onclick="addNote()">Ajouter</button>
+    <ul id="adminNotes"></ul>
   </div>
 
-  <div class="section vie">
-    <h3>Modifier Vie Scolaire</h3>
-    <textarea id="adminVie" placeholder="Ã‰crire message vie scolaire"></textarea>
-    <button onclick="saveAdminVie()">Enregistrer Vie scolaire</button>
+  <div class="section">
+    <h3>📋 Appel</h3>
+    <input type="date" id="appelDate">
+    <select id="appelStatut">
+      <option>Présent</option>
+      <option>Absent</option>
+      <option>Retard</option>
+    </select>
+    <button onclick="validerAppel()">Valider l’appel</button>
+    <ul id="adminAppel"></ul>
   </div>
 
-  <div class="section devoirs">
-    <h3>Modifier Devoirs</h3>
-    <ul id="adminDevoirsList"></ul>
-    <input type="text" id="newDevoir" placeholder="Ex : Maths (10/06/2025) : Exercice 12">
-    <button onclick="addAdminDevoir()">Ajouter Devoir</button>
-  </div>
-
-  <div class="section absent">
-    <h3>Modifier Absences</h3>
-    <input type="text" id="newAbsence" placeholder="Ex : Ã‰lÃ¨ve - Date - Raison">
-    <button onclick="addAdminAbsence()">Ajouter Absence</button>
-    <ul id="adminAbsencesList"></ul>
-  </div>
-
-  <div class="section pdf">
-    <h3>Modifier Documents PDF</h3>
-    <input type="text" id="newPDF" placeholder="Nom du PDF (ou url)">
-    <button onclick="addAdminPDF()">Ajouter PDF</button>
-    <ul id="adminPDFList"></ul>
-  </div>
-
-  <div class="section emplois">
-    <h3>Modifier Emploi du Temps</h3>
-    <textarea id="adminEDT" placeholder="Ex : Lundi : Maths, Histoire"></textarea>
-    <button onclick="saveAdminEDT()">Enregistrer EDT</button>
+  <div class="section">
+    <h3>🕒 Emploi du temps</h3>
+    <textarea id="adminEDT"></textarea>
   </div>
 </div>
 
 <script>
-// Utilisateurs
-const eleves = [
-  { username:"gustav", password:"2019", name:"Gustav" },
-  { username:"julia", password:"2016", name:"Julia" },
-  { username:"flavie", password:"2015", name:"Flavie" },
-  { username:"louis", password:"2013", name:"Louis" },
-  { username:"hermann", password:"5491", name:"Hermann" }
+const eleves=[
+  {u:"gustav",p:"2019",n:"Gustav"},
+  {u:"julia",p:"2016",n:"Julia"}
 ];
 
-let currentEleve = null;   // Ã©lÃ¨ve sÃ©lectionnÃ© dans le panneau admin
-let loggedInUser = null;   // user actuellement connectÃ© ('admin' ou username)
+let logged=null;
 
-// --- Helpers robustes pour éviter les erreurs quand la clé n'existe pas ---
-function defaultData(){
-  return {
-    notes:["Maths : 15/20","Français : 17/20"],
-    vie:"Participation au club théatre. Aucun incident.",
-    abs:"",
-    pdfs:[],
-    devoirs:[],
-    carnet:[0,0,0,0],
-    edt:""
-  };
+function def(){
+  return{notes:[],vie:"",pdfs:[],devoirs:[],edt:"",appel:[]};
 }
-function getEleveData(username){
-  if(!username) return defaultData();
-  const raw = localStorage.getItem(username);
-  if(!raw) return defaultData();
-  try{ return JSON.parse(raw); }catch(e){ return defaultData(); }
-}
-function setEleveData(username,data){
-  if(!username) return; 
-  localStorage.setItem(username, JSON.stringify(data));
-}
+function get(u){ return JSON.parse(localStorage.getItem(u))||def(); }
+function set(u,d){ localStorage.setItem(u,JSON.stringify(d)); }
 
-// ---------------- Fonctions Login ----------------
 function login(){
-  const u=document.getElementById("username").value;
-  const p=document.getElementById("password").value;
-  if(u==="admin" && p==="admin123"){
-    loggedInUser = 'admin';
-    document.getElementById("loginBox").style.display="none";
-    document.getElementById("navbar").style.display="flex";
-    document.getElementById("studentName").innerText="Bienvenue Admin";
-    ouvrir('appel'); document.getElementById("adminPanel").style.display="block";
-    populateAdminSelect();
-  } else {
-    const eleve = eleves.find(e=>e.username===u && e.password===p);
-    if(eleve){
-      loggedInUser = eleve.username;
-      document.getElementById("loginBox").style.display="none";
-      document.getElementById("navbar").style.display="flex";
-      document.getElementById("studentName").innerText=`Bienvenue ${eleve.name}`;
-      ouvrir('pronote');
-      loadEleveData(eleve.username);
-      lockCarnetForEleve();
-
-    } else {
-      document.getElementById("error").innerText="Identifiants incorrects.";
-    }
+  const u=username.value,p=password.value;
+  if(u==="admin"&&p==="admin123"){
+    logged="admin";
+    navbar.style.display="flex";
+    loginBox.style.display="none";
+    adminPanel.style.display="block";
+    ouvrir('pronote');
+    adminSelect.innerHTML="";
+    eleves.forEach(e=>{
+      let o=document.createElement("option");
+      o.value=e.u;o.text=e.n;adminSelect.appendChild(o);
+    });
+    loadAdminData();
+    return;
   }
+  const e=eleves.find(x=>x.u===u&&x.p===p);
+  if(!e){ error.innerText="Erreur";return; }
+  logged=e.u;
+  navbar.style.display="flex";
+  loginBox.style.display="none";
+  pronotePanel.style.display="block";
+  studentName.innerText="Bienvenue "+e.n;
+  loadEleve();
 }
 
-function logout(){
-  loggedInUser = null;
-  currentEleve = null;
-  document.getElementById("navbar").style.display="none";
-  document.getElementById("pronotePanel").style.display="none";
-  document.getElementById("appelPanel").style.display="none";
-  document.getElementById("adminPanel").style.display="none";
-  document.getElementById("loginBox").style.display="block";
-  document.getElementById("username").value="";
-  document.getElementById("password").value="";
+function logout(){ location.reload(); }
+
+function ouvrir(o){
+  pronotePanel.style.display=o==="pronote"?"block":"none";
+  appelPanel.style.display=o==="appel"?"block":"none";
 }
 
-function ouvrir(onglet){
-  document.getElementById("pronotePanel").style.display = onglet==='pronote'?'block':'none';
-  document.getElementById("appelPanel").style.display = onglet==='appel'?'block':'none';
-}
-
-// ---------------- Fonctions Eleve ----------------
-function loadEleveData(username){
-  const data = getEleveData(username);
-  // Notes
-  const gradesList=document.getElementById("studentGrades"); gradesList.innerHTML="";
-  data.notes.forEach(n=>{ const li=document.createElement("li"); li.textContent=n; gradesList.appendChild(li); });
-  document.getElementById("studentVieScolaire").innerText=data.vie;
-  document.getElementById("studentAbsence").innerText=data.abs;
-  const pdfList=document.getElementById("studentPDFs"); pdfList.innerHTML="";
-  data.pdfs.forEach(p=>{ const li=document.createElement("li"); li.textContent=p; pdfList.appendChild(li); });
-  const devoirsList=document.getElementById("studentDevoirs"); devoirsList.innerHTML="";
-  data.devoirs.forEach(d=>{ const li=document.createElement("li"); li.textContent=d; devoirsList.appendChild(li); });
-  document.querySelectorAll(".presence").forEach((input,i)=>{ input.value=data.carnet[i]||0; });
-  document.getElementById("emploiDuTemps").innerHTML="<pre>"+data.edt+"</pre>";
-}
-
-// ---------------- Fonctions Admin ----------------
-function populateAdminSelect(){
-  const select=document.getElementById("adminSelect"); select.innerHTML="";
-  eleves.forEach(e=>{ const opt=document.createElement("option"); opt.value=e.username; opt.textContent=e.name; select.appendChild(opt); });
-  loadAdminData();
+function loadEleve(){
+  const d=get(logged);
+  studentGrades.innerHTML=d.notes.map(n=>`<li>${n}</li>`).join("");
+  studentVie.innerText=d.vie;
+  studentEDT.innerText=d.edt;
+  studentAppel.innerHTML=d.appel.map(a=>`<li>${a.date} : ${a.statut}</li>`).join("");
 }
 
 function loadAdminData(){
-  const username=document.getElementById("adminSelect").value;
-  currentEleve = username;
-  const data = getEleveData(username);
-  document.getElementById("adminVie").value = data.vie;
-  document.getElementById("adminEDT").value = data.edt;
-  updateAdminNotes(data.notes);
-  updateAdminDevoirs(data.devoirs);
-  updateAdminAbsences(data.abs);
-  updateAdminPDFs(data.pdfs);
+  const u=adminSelect.value;
+  const d=get(u);
+  adminNotes.innerHTML=d.notes.map((n,i)=>`<li>${n}<button class="delete" onclick="delNote(${i})">X</button></li>`).join("");
+  adminAppel.innerHTML=d.appel.map(a=>`<li>${a.date} : ${a.statut}</li>`).join("");
+  adminEDT.value=d.edt;
 }
 
-function saveCurrentEleveData(username, data){
-  setEleveData(username, data);
+function addNote(){
+  const u=adminSelect.value,d=get(u);
+  d.notes.push(newNote.value);
+  set(u,d); newNote.value=""; loadAdminData();
 }
 
-// ---- Notes ----
-function addAdminNote(){
-  const text=document.getElementById("newNote").value.trim();
-  if(!text) return;
-  const username = document.getElementById('adminSelect').value;
-  const data = getEleveData(username);
-  data.notes.push(text);
-  setEleveData(username, data); // autosave
-  document.getElementById("newNote").value="";
-  updateAdminNotes(data.notes);
-}
-function updateAdminNotes(notes){
-  const list=document.getElementById("adminNotesList"); list.innerHTML="";
-  notes.forEach((n,i)=>{
-    const li=document.createElement("li"); li.textContent=n;
-    const btn=document.createElement("button"); btn.textContent="Supprimer"; btn.className="delete";
-    btn.onclick=()=>{ const username=document.getElementById('adminSelect').value; const data=getEleveData(username); data.notes.splice(i,1); setEleveData(username,data); updateAdminNotes(data.notes); };
-    li.appendChild(btn); list.appendChild(li);
-  });
+function delNote(i){
+  const u=adminSelect.value,d=get(u);
+  d.notes.splice(i,1); set(u,d); loadAdminData();
 }
 
-// ---- Vie ----
-function saveAdminVie(){
-  const username=document.getElementById('adminSelect').value;
-  const data=getEleveData(username);
-  data.vie = document.getElementById('adminVie').value;
-  setEleveData(username,data);
+function validerAppel(){
+  const u=adminSelect.value,d=get(u);
+  d.appel.push({date:appelDate.value,statut:appelStatut.value});
+  set(u,d); loadAdminData();
 }
 
-// ---- Devoirs ----
-function addAdminDevoir(){
-  const d=document.getElementById('newDevoir').value.trim(); if(!d) return;
-  const username=document.getElementById('adminSelect').value; const data=getEleveData(username);
-  data.devoirs.push(d);
-  setEleveData(username,data);
-  document.getElementById('newDevoir').value=''; updateAdminDevoirs(data.devoirs);
-}
-function updateAdminDevoirs(devoirs){
-  const list=document.getElementById('adminDevoirsList'); list.innerHTML='';
-  devoirs.forEach((d,i)=>{
-    const li=document.createElement('li'); li.textContent=d;
-    const btn=document.createElement('button'); btn.textContent='Supprimer'; btn.className='delete';
-    btn.onclick=()=>{ const username=document.getElementById('adminSelect').value; const data=getEleveData(username); data.devoirs.splice(i,1); setEleveData(username,data); updateAdminDevoirs(data.devoirs); };
-    li.appendChild(btn); list.appendChild(li);
-  });
-}
-
-// ---- Absences ----
-function addAdminAbsence(){
-  const a=document.getElementById('newAbsence').value.trim(); if(!a) return;
-  const username=document.getElementById('adminSelect').value; const data=getEleveData(username);
-  data.abs = (data.abs? (data.abs+'\n'+a) : a);
-  setEleveData(username,data);
-  document.getElementById('newAbsence').value=''; updateAdminAbsences(data.abs);
-}
-function updateAdminAbsences(abs){
-  const list=document.getElementById('adminAbsencesList'); list.innerHTML='';
-  (abs||'').split('\n').forEach((a,i)=>{
-    if(a.trim()!==''){
-      const li=document.createElement('li'); li.textContent=a;
-      const btn=document.createElement('button'); btn.textContent='Supprimer'; btn.className='delete';
-      btn.onclick=()=>{ const username=document.getElementById('adminSelect').value; const data=getEleveData(username); let arr=(data.abs||'').split('\n'); arr.splice(i,1); data.abs = arr.filter(x=>x.trim()!=='').join('\n'); setEleveData(username,data); updateAdminAbsences(data.abs); };
-      li.appendChild(btn); list.appendChild(li);
-    }
-  });
-}
-
-// ---- PDF ----
-function addAdminPDF(){
-  const p=document.getElementById('newPDF').value.trim(); if(!p) return;
-  const username=document.getElementById('adminSelect').value; const data=getEleveData(username);
-  data.pdfs.push(p);
-  setEleveData(username,data);
-  document.getElementById('newPDF').value=''; updateAdminPDFs(data.pdfs);
-}
-function updateAdminPDFs(pdfs){
-  const list=document.getElementById('adminPDFList'); list.innerHTML='';
-  pdfs.forEach((p,i)=>{
-    const li=document.createElement('li'); li.textContent=p;
-    const btn=document.createElement('button'); btn.textContent='Supprimer'; btn.className='delete';
-    btn.onclick=()=>{ const username=document.getElementById('adminSelect').value; const data=getEleveData(username); data.pdfs.splice(i,1); setEleveData(username,data); updateAdminPDFs(data.pdfs); };
-    li.appendChild(btn); list.appendChild(li);
-  });
-}
-
-// ---- Emploi du Temps ----
-function saveAdminEDT(){
-  const username=document.getElementById('adminSelect').value; const data=getEleveData(username);
-  data.edt = document.getElementById('adminEDT').value;
-  setEleveData(username,data);
-}
-
-// ---- Carnet Vie scolaire ----
-function numerote(){
-  // Si admin est connectÃ©, on enregistre pour l'Ã©lÃ¨ve sÃ©lectionnÃ© ; sinon pour l'Ã©lÃ¨ve connectÃ©
-  const target = (loggedInUser === 'admin') ? (document.getElementById('adminSelect').value || currentEleve) : loggedInUser;
-  if(!target){ alert('Aucun Ã©lÃ¨ve sÃ©lectionnÃ© pour enregistrer le carnet.'); return; }
-  const data = getEleveData(target);
-  const values = [];
-  document.querySelectorAll('.presence').forEach(i=> values.push(Number(i.value)||0));
-  data.carnet = values;
-  setEleveData(target, data);
-  alert('Carnet enregistrÃ© pour '+target);
-}
-
-// ---- Toggle affichages ----
-function toggleSection(cls){ const sec=document.querySelector('.'+cls); if(!sec) return; sec.style.display = sec.style.display==='none' ? 'block' : 'none'; }
-function toggleVieScolaire(){ const v=document.getElementById('vieScolaire'); v.style.display=v.style.display==='none'?'block':'none'; }
-function toggleEDT(){ const e=document.getElementById('emploiDuTemps'); e.style.display=e.style.display==='none'?'block':'none'; }
-
-// --- auto-save: on input change, save immediately (sans recharger l'Ã©lÃ¨ve) ---
-window.addEventListener('load', ()=>{
-  const adminVieEl = document.getElementById('adminVie');
-  const adminEDTEl = document.getElementById('adminEDT');
-  const adminSelectEl = document.getElementById('adminSelect');
-
-  if(adminVieEl){
-    adminVieEl.addEventListener('input', ()=>{
-      const username = adminSelectEl.value; if(!username) return;
-      const data = getEleveData(username); data.vie = adminVieEl.value; setEleveData(username,data);
-    });
-  }
-  if(adminEDTEl){
-    adminEDTEl.addEventListener('input', ()=>{
-      const username = adminSelectEl.value; if(!username) return;
-      const data = getEleveData(username); data.edt = adminEDTEl.value; setEleveData(username,data);
-    });
-  }
-
-  // If an admin options exist on page load, populate them
-  if(document.getElementById('adminSelect') && loggedInUser === 'admin'){
-    populateAdminSelect();
-  }
-  function lockCarnetForEleve() {
-  if (loggedInUser !== 'admin') {
-    document.querySelectorAll('.presence').forEach(input => {
-      input.readOnly = true;
-      input.classList.add('readonly');
-    });
-    const btn = document.querySelector('#appelPanel button');
-    if (btn) btn.disabled = true;
-
-    const info = document.createElement('div');
-    info.className = 'info';
-    info.innerText = '🔒 Carnet de vie scolaire – lecture seule pour les élèves';
-    document.getElementById('appelPanel').prepend(info);
-  }
-}
-
+adminEDT?.addEventListener("input",()=>{
+  const u=adminSelect.value,d=get(u);
+  d.edt=adminEDT.value; set(u,d);
 });
-
 </script>
 
 </body>
